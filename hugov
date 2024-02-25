@@ -1,0 +1,40 @@
+#!/bin/bash
+
+# Function to download releases from a specific page
+download_releases_from_page() {
+  local page_url="$1"
+  local versions
+  versions=$(curl -s "$page_url" | jq -r '.[].tag_name')
+  for version in $versions; do
+    file="./download/hugo-$version.tar.gz"
+    if [ ! -f "$file" ]; then
+      echo "Downloading $version..."
+      download_url="https://github.com/gohugoio/hugo/releases/download/${version}/hugo_${version:1}_Linux-64bit.tar.gz"
+      curl -s -L -o "$file" "$download_url"
+    fi
+  done
+}
+
+# Create download directory if it doesn't exist
+mkdir -p ./download
+
+# Define the base URL
+base_url="https://api.github.com/repos/gohugoio/hugo/releases"
+
+# Fetch and download releases from each release page
+page_number=1
+while true; do
+  page_url="${base_url}?per_page=100&page=${page_number}"
+  page_content=$(curl -s "$page_url")
+  echo "Processing page $page_number..."
+  if [ -z "$page_content" ] || [ "$page_content" == "[]" ]; then
+    # No more releases available, exit the loop
+    break
+  fi
+  if [[ "$page_content" == *"API rate limit exceeded"* ]]; then
+    echo "API rate limit exceeded. Currently 60 unauthenticated requests per hour are allowed. Wait for 1h."
+    break
+  fi
+  download_releases_from_page "$page_url"
+  ((page_number++))
+done
