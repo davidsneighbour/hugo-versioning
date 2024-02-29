@@ -9,14 +9,15 @@ download_releases_from_page() {
     file="./download/hugo-$version.tar.gz"
     if [ ! -f "$file" ]; then
       echo "Downloading $version..."
-      download_url="https://github.com/gohugoio/hugo/releases/download/${version}/hugo_${version:1}_Linux-64bit.tar.gz"
+      host_url="https://github.com/gohugoio/hugo/releases/download"
+      download_url="${host_url}/${version}/hugo_extended_${version:1}_Linux-64bit.tar.gz"
       curl -s -L -o "$file" "$download_url"
     fi
   done
 }
 
 # Create download directory if it doesn't exist
-mkdir -p ./download
+mkdir -p ./downloads
 
 # Define the base URL
 base_url="https://api.github.com/repos/gohugoio/hugo/releases"
