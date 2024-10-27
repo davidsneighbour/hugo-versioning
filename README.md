@@ -1,6 +1,6 @@
-# `hugov`
+## `hugov`
 
-## A quick and dirty GoHugo version selector for bash
+A quick and dirty GoHugo version selector for bash
 
 ### Installation
 

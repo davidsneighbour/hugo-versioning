@@ -9,12 +9,17 @@
   "keywords": [],
   "author": "Patrick Kollitsch <patrick@davids-neighbour.com>",
   "license": "MIT",
-  "dependencies": {
-    "@davidsneighbour/release-config": "^2024.4.6"
-  },
   "wireit": {
     "release": {
       "command": "commit-and-tag-version --sign -a -t \"v\" --releaseCommitMessageFormat \"chore(release): v{{currentTag}}\" -- --no-verify && ./bin/repo/release/postrelease"
     }
+  },
+  "devDependencies": {
+    "@davidsneighbour/release-config": "^2024.4.6",
+    "@davidsneighbour/tools": "^2024.4.6"
+  },
+  "dependencies": {
+    "@davidsneighbour/markdownlint-config": "^2024.4.6",
+    "@davidsneighbour/remark-config": "^2024.4.6"
   }
 }
