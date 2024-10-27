@@ -1,6 +1,8 @@
-# `hugov` - A quick and dirty GoHugo version selector for bash
+# `hugov`
 
-## Install
+## A quick and dirty GoHugo version selector for bash
+
+### Installation
 
 Either do a soft link or "just" use it from here.
 
