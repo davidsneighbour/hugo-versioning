@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [2024.1.2](https://github.com/davidsneighbour/hugov/compare/v2024.1.1...v2024.1.2) (2024-10-27)
+
 ## [2024.1.1](https://github.com/davidsneighbour/hugov/compare/v2024.1.0...v2024.1.1) (2024-10-27)
 
 ## 2024.1.0 (2024-10-27)
