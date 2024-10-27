@@ -1,19 +1,16 @@
 {
   "name": "hugo-versioning",
-  "version": "2024.0.0",
+  "version": "2024.1.0",
   "description": "A quick and dirty GoHugo version selector for bash",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "release": "wireit"
   },
   "keywords": [],
   "author": "Patrick Kollitsch <patrick@davids-neighbour.com>",
   "license": "MIT",
   "dependencies": {
     "@davidsneighbour/release-config": "^2024.4.6"
-  },
-  "scripts": {
-  "release": "wireit"
   },
   "wireit": {
     "release": {
