@@ -94,11 +94,12 @@ version_ge() {
   [[ "$(echo -e "$1\n$2" | sort -V | head -n 1)" == "$2" ]]
 }
 
-# Modified download_single_version function
+# Modified download_single_version function to handle different URL formats including v0.102.3
 download_single_version() {
   local version="$1"
   local host_url="$2"
   local threshold_version="v0.102.0"
+  local mid_version="v0.102.3"
 
   # Define paths for standard and extended executables
   local standard_file="$DOWNLOAD_DIR/hugo-$version.tar.gz"
@@ -107,10 +108,18 @@ download_single_version() {
   local extended_executable="$DOWNLOAD_DIR/hugo-$version-extended"
 
   # Determine URL format based on version comparison
-  if version_ge "$version" "$threshold_version"; then
-    # Format for versions after v0.102.0
+  if [[ "$version" == "$mid_version" ]]; then
+    # Format for version v0.102.3
+    local standard_url="${host_url}/${version}/hugo_${version:1}_Linux-64bit.tar.gz"
+    local extended_url="${host_url}/${version}/hugo_extended_${version:1}_Linux-64bit.tar.gz"
+  elif version_ge "$version" "$mid_version"; then
+    # Format for versions after v0.102.3
     local standard_url="${host_url}/${version}/hugo_${version:1}_linux-amd64.tar.gz"
     local extended_url="${host_url}/${version}/hugo_extended_${version:1}_linux-amd64.tar.gz"
+  elif version_ge "$version" "$threshold_version"; then
+    # Format for versions from v0.102.0 up to (but not including) v0.102.3
+    local standard_url="${host_url}/${version}/hugo_${version:1}_Linux-64bit.tar.gz"
+    local extended_url="${host_url}/${version}/hugo_extended_${version:1}_Linux-64bit.tar.gz"
   else
     # Format for versions up to v0.102.0
     local standard_url="${host_url}/${version}/hugo_${version:1}_Linux-64bit.tar.gz"
