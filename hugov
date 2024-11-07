@@ -1,12 +1,17 @@
 #!/bin/bash
 
+# Resolve the actual path of the script, following any symlinks
+SCRIPT_PATH="$(readlink -f "${BASH_SOURCE[0]}")"
+# Get the directory of the resolved script path
+SCRIPT_DIR="$(cd "$(dirname "$SCRIPT_PATH")" && pwd)"
+
 # Default configuration
 # Directory for the symlink to the Hugo executable
 BINDIR="/usr/local/bin"
 # Version at which to stop downloads
 STOP_VERSION="v0.84.0"
 # Download Directory
-DOWNLOAD_DIR="./executables"
+DOWNLOAD_DIR="$SCRIPT_DIR/executables"
 # The GoHugo releases API URL
 BASE_URL="https://api.github.com/repos/gohugoio/hugo/releases"
 
@@ -215,9 +220,6 @@ link_version() {
   echo "Please ensure you understand the ramifications of using sudo."
   echo ""
 
-  # Get the absolute path of the current directory
-  curpath=$(pwd)
-
   # List unique version numbers without differentiating normal/extended versions
   available_versions=$(find $DOWNLOAD_DIR -type f -name "hugo-*" | sed -E 's/.*\/hugo-(v?[0-9]+\.[0-9]+\.[0-9]+)(-extended)?$/\1/' | sort -uV)
   latest_version=$(echo "$available_versions" | tail -n 1)
@@ -236,9 +238,9 @@ link_version() {
   read -r -p "Do you want the extended version? (Y/n): " is_extended
   is_extended="${is_extended:-Y}"
   if [[ "$is_extended" =~ ^[Yy]$ ]]; then
-    selected_executable="$curpath/$DOWNLOAD_DIR/${normalized_version}-extended"
+    selected_executable="$DOWNLOAD_DIR/${normalized_version}-extended"
   else
-    selected_executable="$curpath/$DOWNLOAD_DIR/$normalized_version"
+    selected_executable="$DOWNLOAD_DIR/$normalized_version"
   fi
 
   # Check if the selected executable exists
