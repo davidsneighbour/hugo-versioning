@@ -1,6 +1,6 @@
 {
   "name": "hugo-versioning",
-  "version": "2024.2.0",
+  "version": "2024.2.1",
   "description": "A quick and dirty GoHugo version selector for bash",
   "main": "index.js",
   "scripts": {
