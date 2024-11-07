@@ -24,3 +24,7 @@ Or run it from within this repository:
 ```bash
 ./hugov
 ```
+
+## Read on
+
+* [Blog post presenting `hugov`](https://kollitsch.dev/blog/2024/hugov-managing-multiple-gohugo-versions/)
