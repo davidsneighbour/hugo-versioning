@@ -14,6 +14,7 @@ BASE_URL="https://api.github.com/repos/gohugoio/hugo/releases"
 download_flag=false
 list_flag=false
 link_flag=false
+update_flag=false
 
 # Check if required dependencies (jq, curl, tar, rm, ln) are installed
 check_dependencies() {
@@ -40,7 +41,41 @@ show_help() {
   echo "  --version             Display the script version."
   echo "  --link                Create a symlink to a specified Hugo version in the BINDIR directory (requires sudo)."
   echo "  --bindir <directory>  Specify the directory for the Hugo symlink (default: /usr/local/bin)."
+  echo "  --update              Download the latest versions and link the latest one (asks for standard or extended)."
   echo "  --help                Display this help message."
+}
+
+# Function to update by downloading and linking the latest version
+update_versions() {
+  download_versions
+
+  # Determine the latest version
+  available_versions=$(find "$DOWNLOAD_DIR" -type f -name "hugo-*" | sed -E 's/.*\/hugo-(v?[0-9]+\.[0-9]+\.[0-9]+)(-extended)?$/\1/' | sort -uV)
+  latest_version=$(echo "$available_versions" | tail -n 1)
+
+  echo "Latest downloaded version: $latest_version"
+
+  # Ask for extended or standard version
+  read -r -p "Do you want the extended version? (Y/n): " is_extended
+  is_extended="${is_extended:-Y}"
+  if [[ "$is_extended" =~ ^[Yy]$ ]]; then
+    selected_executable="$DOWNLOAD_DIR/hugo-${latest_version}-extended"
+  else
+    selected_executable="$DOWNLOAD_DIR/hugo-${latest_version}"
+  fi
+
+  # Convert selected_executable to an absolute path
+  selected_executable="$(realpath "$selected_executable")"
+
+  if [ -f "$selected_executable" ]; then
+    # Proceed to create symlink
+    sudo rm -f "$BINDIR/hugo"
+    sudo ln -s "$selected_executable" "$BINDIR/hugo"
+    echo "Symlink created: $BINDIR/hugo -> $selected_executable"
+  else
+    echo "Error: Hugo version $latest_version${is_extended:+-extended} is not available."
+    exit 1
+  fi
 }
 
 # Show script version by reading package.json
@@ -79,7 +114,7 @@ download_releases_from_page() {
     if [[ "$version" == "$STOP_VERSION" ]]; then
       echo "Reached version $STOP_VERSION. Downloading and stopping further downloads."
       download_single_version "$version" "$host_url"
-      return 1  # Signal to stop the outer loop in download_versions
+      return 1 # Signal to stop the outer loop in download_versions
     fi
 
     # Proceed with the download
@@ -229,43 +264,50 @@ fi
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --help)
-      show_help
-      exit 0
-      ;;
-    --list)
-      if $download_flag || $link_flag; then
-        echo "Error: --list cannot be used with --download or --link."
-        exit 1
-      fi
-      list_flag=true
-      ;;
-    --download)
-      if $list_flag || $link_flag; then
-        echo "Error: --download cannot be used with --list or --link."
-        exit 1
-      fi
-      download_flag=true
-      ;;
-    --version)
-      show_version
-      exit 0
-      ;;
-    --link)
-      if $download_flag || $list_flag; then
-        echo "Error: --link cannot be used with --download or --list."
-        exit 1
-      fi
-      link_flag=true
-      ;;
-    --bindir)
-      shift
-      BINDIR="$1"
-      ;;
-    *)
-      echo "Invalid option: $1. Use --help for available options."
+  --help)
+    show_help
+    exit 0
+    ;;
+  --list)
+    if $download_flag || $link_flag || $update_flag; then
+      echo "Error: --list cannot be used with --download, --link, or --update."
       exit 1
-      ;;
+    fi
+    list_flag=true
+    ;;
+  --download)
+    if $list_flag || $link_flag || $update_flag; then
+      echo "Error: --download cannot be used with --list, --link, or --update."
+      exit 1
+    fi
+    download_flag=true
+    ;;
+  --version)
+    show_version
+    exit 0
+    ;;
+  --link)
+    if $download_flag || $list_flag || $update_flag; then
+      echo "Error: --link cannot be used with --download, --list, or --update."
+      exit 1
+    fi
+    link_flag=true
+    ;;
+  --update)
+    if $download_flag || $list_flag || $link_flag; then
+      echo "Error: --update cannot be used with --download, --list, or --link."
+      exit 1
+    fi
+    update_flag=true
+    ;;
+  --bindir)
+    shift
+    BINDIR="$1"
+    ;;
+  *)
+    echo "Invalid option: $1. Use --help for available options."
+    exit 1
+    ;;
   esac
   shift
 done
@@ -277,4 +319,6 @@ elif $list_flag; then
   list_downloaded_versions
 elif $link_flag; then
   link_version
+elif $update_flag; then
+  update_versions
 fi
