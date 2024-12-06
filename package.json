@@ -17,7 +17,7 @@
   "devDependencies": {
     "@davidsneighbour/release-config": "^2024.4.8",
     "@davidsneighbour/tools": "^2024.4.6",
-    "@apidevtools/json-schema-ref-parser": "^11.7.2"
+    "@apidevtools/json-schema-ref-parser": "^11.7.3"
   },
   "dependencies": {
     "@davidsneighbour/markdownlint-config": "^2024.4.8",
