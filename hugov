@@ -101,7 +101,7 @@ show_version() {
 list_downloaded_versions() {
   echo "Downloaded Hugo versions:"
   if [ -d "$DOWNLOAD_DIR" ]; then
-    find $DOWNLOAD_DIR -type f -name "hugo-*" | sed -E 's/.*\/hugo-([^-]+)(-extended)?$/\1\2/' | sort -uV
+    find "$DOWNLOAD_DIR" -type f -name "hugo-*" | sed -E 's/.*\/hugo-([^-]+)(-extended)?$/\1\2/' | sort -uV
   else
     echo "No versions downloaded yet."
   fi
@@ -134,7 +134,6 @@ version_ge() {
   [[ "$(echo -e "$1\n$2" | sort -V | head -n 1)" == "$2" ]]
 }
 
-# Modified download_single_version function to handle different URL formats including v0.102.3
 download_single_version() {
   local version="$1"
   local host_url="$2"
@@ -162,28 +161,40 @@ download_single_version() {
     local extended_url="${host_url}/${version}/hugo_extended_${version:1}_Linux-64bit.tar.gz"
   fi
 
-  # Download standard version if it doesn't exist
+  # Download and validate standard version
   if [ -f "$standard_executable" ]; then
     echo "Skipping standard $version, executable already exists."
   else
     echo "Downloading standard Hugo $version from $standard_url..."
     curl -s -L -o "$standard_file" "$standard_url"
 
-    echo "Extracting standard Hugo $version..."
-    tar -xzf "$standard_file" -C "$DOWNLOAD_DIR" "hugo" && mv "$DOWNLOAD_DIR/hugo" "$standard_executable"
-    rm "$standard_file"
+    # Validate if the file exists and is a valid tar.gz archive
+    if [ -f "$standard_file" ] && tar -tzf "$standard_file" &>/dev/null; then
+      echo "Extracting standard Hugo $version..."
+      tar -xzf "$standard_file" -C "$DOWNLOAD_DIR" "hugo" && mv "$DOWNLOAD_DIR/hugo" "$standard_executable"
+      rm "$standard_file"
+    else
+      echo "Error: Failed to download a valid standard Hugo $version file."
+      rm -f "$standard_file"
+    fi
   fi
 
-  # Download extended version if it doesn't exist
+  # Download and validate extended version
   if [ -f "$extended_executable" ]; then
     echo "Skipping extended $version, executable already exists."
   else
     echo "Downloading extended Hugo $version from $extended_url..."
     curl -s -L -o "$extended_file" "$extended_url"
 
-    echo "Extracting extended Hugo $version..."
-    tar -xzf "$extended_file" -C "$DOWNLOAD_DIR" "hugo" && mv "$DOWNLOAD_DIR/hugo" "$extended_executable"
-    rm "$extended_file"
+    # Validate if the file exists and is a valid tar.gz archive
+    if [ -f "$extended_file" ] && tar -tzf "$extended_file" &>/dev/null; then
+      echo "Extracting extended Hugo $version..."
+      tar -xzf "$extended_file" -C "$DOWNLOAD_DIR" "hugo" && mv "$DOWNLOAD_DIR/hugo" "$extended_executable"
+      rm "$extended_file"
+    else
+      echo "Error: Failed to download a valid extended Hugo $version file."
+      rm -f "$extended_file"
+    fi
   fi
 }
 
