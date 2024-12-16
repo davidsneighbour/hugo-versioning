@@ -4,6 +4,7 @@
   "description": "A quick and dirty GoHugo version selector for bash",
   "main": "index.js",
   "scripts": {
+    "clean": "rimraf executables/* .wireit",
     "release": "wireit"
   },
   "keywords": [],
