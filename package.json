@@ -1,27 +1,25 @@
 {
   "name": "hugo-versioning",
-  "version": "2024.2.1",
   "description": "A quick and dirty GoHugo version selector for bash",
-  "main": "index.js",
+  "version": "2024.2.1",
+  "license": "MIT",
+  "author": "Patrick Kollitsch <patrick@davids-neighbour.com>",
+  "keywords": [],
+  "devDependencies": {
+    "@apidevtools/json-schema-ref-parser": "11.7.3",
+    "@davidsneighbour/markdownlint-config": "2024.4.12",
+    "@davidsneighbour/release-config": "2024.4.12",
+    "@davidsneighbour/remark-config": "2024.4.12",
+    "@davidsneighbour/tools": "2024.4.12"
+  },
   "scripts": {
     "clean": "rimraf executables/* .wireit",
     "release": "wireit"
   },
-  "keywords": [],
-  "author": "Patrick Kollitsch <patrick@davids-neighbour.com>",
-  "license": "MIT",
   "wireit": {
     "release": {
       "command": "commit-and-tag-version --sign -a -t \"v\" --releaseCommitMessageFormat \"chore(release): v{{currentTag}}\" -- --no-verify && ./bin/repo/release/postrelease"
     }
   },
-  "devDependencies": {
-    "@davidsneighbour/release-config": "^2024.4.12",
-    "@davidsneighbour/tools": "^2024.4.12",
-    "@apidevtools/json-schema-ref-parser": "^11.7.3"
-  },
-  "dependencies": {
-    "@davidsneighbour/markdownlint-config": "^2024.4.12",
-    "@davidsneighbour/remark-config": "^2024.4.12"
-  }
+  "main": "index.js"
 }
